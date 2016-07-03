@@ -1,0 +1,16 @@
+
+/**
+ * @author Denis
+ *
+ */
+public class Refinery extends Asset 
+{
+	private static final String R_NAME = "Refinery";
+	private static final String R_SYMBOL = "R";
+	
+	public Refinery(int purchasePrice, int liquidationPrice) 
+	{
+		super(R_NAME, R_SYMBOL, purchasePrice, liquidationPrice);
+	}
+
+}

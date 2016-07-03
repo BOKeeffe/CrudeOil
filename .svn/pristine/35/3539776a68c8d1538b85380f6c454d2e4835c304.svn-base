@@ -1,0 +1,246 @@
+import static org.junit.Assert.*;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Random;
+
+import org.junit.Test;
+
+public class GameTest
+{
+
+	@Test
+	public void testCardArray() {
+		ArrayList<EconomyCard> ecoCards = new ArrayList<EconomyCard>();
+
+		EconomyCard recovery = new EconomyCard("Recovery", 3, 48, 24, 5, 3, 64,
+				30, 30);
+		EconomyCard depression = new EconomyCard("Depression", (-2), 32, 18, 4,
+				2, 50, 24, 20);
+		EconomyCard rapidGrowth = new EconomyCard("Rapid Growth", 6, 88, 50,
+				14, 9, 132, 90, 65);
+		EconomyCard prosperity = new EconomyCard("Prosperity", 7, 100, 60, 16,
+				12, 160, 120, 75);
+		EconomyCard expansion = new EconomyCard("Expansion", 4, 66, 32, 9, 5,
+				96, 60, 50);
+		EconomyCard downturn = new EconomyCard("Downturn", 2, 75, 45, 12, 8,
+				120, 80, 60);
+		EconomyCard recession = new EconomyCard("Recession", 0, 55, 30, 8, 4,
+				80, 32, 45);
+		ecoCards.add(recovery);
+		ecoCards.add(depression);
+		ecoCards.add(rapidGrowth);
+		ecoCards.add(prosperity);
+		ecoCards.add(expansion);
+		ecoCards.add(downturn);
+		ecoCards.add(recession);
+
+	}
+
+	@Test
+	public void testNewsCardSelection() {
+		Random randomiser = new Random();
+		ArrayList<NewsCard> newsCards = new ArrayList<NewsCard>();
+		NewsCard lessLikely;
+		NewsCard moreLikely;
+		NewsCard tempCard;
+
+		NewsCard debtReductionTax = new NewsCard("Debt Reduction Taxes", 1,
+				("Each player must pay the bank for each of his/her assets:- "
+						+ "/n" + "Rig: 2million" + "/n" + "Well: 5million"
+						+ "/n" + "Station: 15million" + "Refinery: 20million"));
+
+		NewsCard globalWarming = new NewsCard("Global Warming Tax", 2,
+				("Each player must pay the bank for each of his/her assets:- "
+						+ "/n" + "Rig: 2million" + "/n" + "Well: 5million"
+						+ "/n" + "Station: 15million" + "Refinery: 20million"));
+
+		NewsCard salesTax = new NewsCard("Sales Taxes", 3,
+				("Each player must pay the bank for each of his/her assets:- "
+						+ "/n" + "Rig: 2million" + "/n" + "Well: 5million"
+						+ "/n" + "Station: 15million" + "Refinery: 20million"));
+
+		NewsCard longWinter = new NewsCard("Long Winter Costs", 4,
+				("Each player must pay the bank for each of his/her assets:- "
+						+ "/n" + "Rig: 2million" + "/n" + "Well: 5million"
+						+ "/n" + "Station: 15million" + "Refinery: 20million"));
+
+		NewsCard inspection = new NewsCard("Snap Inspection", 5,
+				("Each player must pay the bank for each of his/her assets:- "
+						+ "/n" + "Rig: 2million" + "/n" + "Well: 5million"
+						+ "/n" + "Station: 15million" + "Refinery: 20million"));
+
+		NewsCard uncertainty = new NewsCard("Market Uncertainty", 6,
+				("Each player must pay the bank for each of his/her assets:- "
+						+ "/n" + "Rig: 2million" + "/n" + "Well: 5million"
+						+ "/n" + "Station: 15million" + "Refinery: 20million"));
+
+		newsCards.add(debtReductionTax);
+		newsCards.add(globalWarming);
+		newsCards.add(salesTax);
+		newsCards.add(longWinter);
+		newsCards.add(inspection);
+		newsCards.add(uncertainty);
+
+		int pickA = randomiser.nextInt(newsCards.size());
+
+		assertNotNull(pickA);
+		lessLikely = newsCards.get(pickA);
+		tempCard = lessLikely;
+		assertNotNull(lessLikely);
+		assertEquals(1, debtReductionTax.getNewsid());
+		assertEquals(lessLikely.getNewsid(), tempCard.getNewsid());
+		newsCards.remove(pickA);
+		assertEquals(5, newsCards.size());
+
+		int pickB = randomiser.nextInt(newsCards.size());
+		moreLikely = newsCards.get(pickB);
+		newsCards.add(tempCard);
+		assertEquals(6, newsCards.size());
+	}
+
+	@Test
+	public void testSizeOfEmptyArrayList() {
+		ArrayList<Player> players = new ArrayList<Player>();
+
+		assertEquals(0, players.size());
+	}
+
+	@Test
+	public void testCounter() {
+		Counter playerTurn = new Counter(0, 4);
+		Player cPlayer;
+		ArrayList<Player> thePlayers = new ArrayList<Player>();
+
+		Player playerA = new Player("Ian", 0, 0, 0, 0);
+		Player playerB = new Player("John", 1, 1, 1, 1);
+		Player playerC = new Player("Joe", 1, 1, 1, 1);
+		Player playerD = new Player("Jim", 1, 1, 1, 1);
+
+		thePlayers.add(playerA);
+		thePlayers.add(playerB);
+		thePlayers.add(playerC);
+		thePlayers.add(playerD);
+
+		Collections.shuffle(thePlayers);
+
+		cPlayer = thePlayers.get(playerTurn.getCount());
+		assertNotNull(cPlayer);
+	}
+
+	/**
+	 * Testing of the new version of selecting news cards.
+	 */
+	@Test
+	public void testNewNewsSelector() {
+		ArrayList<NewsCard> newsCards = new ArrayList<NewsCard>();
+
+		NewsCard debtReductionTax = new NewsCard("Debt Reduction Taxes", 1,
+				("Each player must pay the bank for each of his/her assets:- "
+						+ "/n" + "Rig: 2million" + "/n" + "Well: 5million"
+						+ "/n" + "Station: 15million" + "Refinery: 20million"));
+
+		NewsCard globalWarming = new NewsCard("Global Warming Threat", 2,
+				("Each player must pay the bank 25million for each "
+						+ "refinery he owns"));
+
+		NewsCard salesTax = new NewsCard(
+				"Sales Taxes",
+				3,
+				("Each player must pay 15million for each Gas Station they own."));
+
+		NewsCard longWinter = new NewsCard("Long Cold Winter Costs", 4,
+				("Remove 5 barrels of Gas from the domestic market."));
+
+		NewsCard inspection = new NewsCard(
+				"Snap Inspection",
+				5,
+				("Each player must pay the bank 3million for every Oil barrel"
+						+ "they own and 5million for every Gas barrel they own."));
+
+		NewsCard uncertainty = new NewsCard("Market Uncertainty", 6,
+				("Uncertainty causes the increase of Oil prices at home."
+						+ "/n" + "The drop of gas on the consumer market."));
+
+		// Adding news cards to an arraylist
+		newsCards.add(debtReductionTax);
+		newsCards.add(globalWarming);
+		newsCards.add(salesTax);
+		newsCards.add(longWinter);
+		newsCards.add(inspection);
+		newsCards.add(uncertainty);
+
+		assertEquals(6, newsCards.size());
+
+		NewsCard lessLikely = newsCards.get(0);
+		// NewsCard tempCard = lessLikely;
+		newsCards.remove(lessLikely);
+		assertEquals(5, newsCards.size());
+		assertEquals(1, lessLikely.newsid);
+		// int pickB = randomiser.nextInt(newsCards.size());
+		NewsCard moreLikely = newsCards.get(0);
+		assertEquals(2, moreLikely.newsid);
+		newsCards.remove(moreLikely);
+		assertEquals(4, newsCards.size());
+
+		moreLikely = lessLikely;
+		assertEquals(1, moreLikely.newsid);
+		newsCards.add(lessLikely);
+		assertEquals(5, newsCards.size());
+		lessLikely = newsCards.get(0);
+		newsCards.remove(lessLikely);
+		assertEquals(3, lessLikely.newsid);
+	}
+
+	@Test
+	public void testHits() {
+		int black = 3;
+
+		Player cPlayer = new Player("bob", 1, 200, 2, 2);
+		EconomyBoard eBoard = new EconomyBoard(26, 16, 6, 16, 6);
+
+		cPlayer.playerGrid[2][0] = new Refinery();
+		cPlayer.playerGrid[0][3] = new Station();
+		cPlayer.playerGrid[2][4] = new Refinery();
+		cPlayer.playerGrid[3][3] = new DrillRig();
+		cPlayer.playerGrid[5][1] = new Refinery();
+		cPlayer.playerGrid[2][5] = new Refinery();
+
+		int i = 0;
+
+		// check for doubles in the rows
+		while (i < cPlayer.playerGrid.length) {
+			if (cPlayer.playerGrid[i][black] != null) { // ignores null grid
+														// spaces
+				if (cPlayer.playerGrid[i][black].symbol.equals("R")) {
+					if (black != i) {
+						if (cPlayer.oilBarrels > 0) {
+							cPlayer.oilBarrels -= 1;
+							cPlayer.gasBarrels += 1;
+						}
+					}
+				}
+
+				else if (cPlayer.playerGrid[i][black].symbol.equals("S")) {
+					if (black != i) {
+						if (cPlayer.gasBarrels > 0) {
+							cPlayer.gasBarrels -= 1;
+							cPlayer.balance += eBoard.consumerMarketPrice;
+							eBoard.consumerMarketPrice -= 1;
+						}
+
+					}
+				} else if (cPlayer.playerGrid[i][black].symbol.equals("W")) {
+					if (black != i) {
+
+						cPlayer.oilBarrels += 2;
+					}
+
+				}
+			}
+			i++;
+		}
+		assertEquals(1, cPlayer.getGasBarrels());
+		assertEquals(226, cPlayer.getBalance());
+	}
+}

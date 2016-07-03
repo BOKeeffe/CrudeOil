@@ -1,0 +1,40 @@
+import static org.junit.Assert.*;
+
+import org.junit.Before;
+
+import org.junit.Test;
+
+public class EconomyCardTest
+{
+
+	EconomyCard downturn, recovery, recession, emptyEconmyCard;
+
+	@Before
+	public void setUp() throws Exception {
+		downturn = new EconomyCard("downturn", 2, 75, 45, 12, 8, 120, 80, 60);
+		recovery = new EconomyCard("recovery", 3, 48, 24, 5, 3, 64, 30, 30);
+		recession = new EconomyCard("recession", 0, 55, 30, 8, 4, 80, 32, 45);
+	}
+
+	@Test
+	public void testConstructor() {
+		assertEquals("downturn", downturn.getName());
+		assertEquals(75, downturn.getStationPurPrice());
+		assertEquals(2, downturn.getDemandChange());
+		assertEquals("recovery", recovery.getName());
+		assertEquals(48, recovery.getStationPurPrice());
+		assertEquals(3, recovery.getDemandChange());
+		assertEquals("recession", recession.getName());
+		assertEquals(55, recession.getStationPurPrice());
+		assertEquals(0, recession.getDemandChange());
+	}
+
+}
+	    
+	 
+	 
+	
+	
+	
+
+

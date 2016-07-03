@@ -1,0 +1,91 @@
+/**
+ * @author Denis
+ * 
+ */
+public class Asset
+{
+	private String buildingName;
+	private String symbol;
+	private int purchasePrice;
+	private int liquidationPrice;
+
+	/**
+	 * Constructor for objects of class Asset
+	 * 
+	 */
+	public Asset(String buildingName, String symbol) {
+		this.buildingName = buildingName;
+		this.symbol = symbol;
+	}
+
+	/**
+	 * @param buildingName
+	 */
+	public void setBuidingName(String buildingName) {
+		this.buildingName = buildingName;
+	}
+
+	/**
+	 * @return
+	 */
+	public String getBuildingName() {
+		return buildingName;
+	}
+
+	/**
+	 * @param symbol
+	 */
+	public void setSymbol(String symbol) {
+		this.symbol = symbol;
+	}
+
+	/**
+	 * @return
+	 */
+	public String getSymbol() {
+		return symbol;
+	}
+
+	/**
+	 * @param purchasePrice
+	 */
+	public void setPurchasePrice(int purchasePrice) {
+		if (purchasePrice >= 0) {
+			this.purchasePrice = purchasePrice;
+		}
+	}
+
+	/**
+	 * @return
+	 */
+	public int getPurchasePrice() {
+		return purchasePrice;
+	}
+
+	/**
+	 * @param liquidationPrice
+	 */
+	public void setLiquidationPrice(int liquidationPrice) {
+		if (liquidationPrice >= 0) {
+			this.liquidationPrice = liquidationPrice;
+		}
+	}
+
+	/**
+	 * @return
+	 */
+	public int getLiquidationPrice() {
+		return liquidationPrice;
+	}
+
+	/** 
+	 * @return The symbol of the asset.
+	 */
+	@Override
+	public String toString() {
+		return symbol;
+	}
+	
+	
+
+}

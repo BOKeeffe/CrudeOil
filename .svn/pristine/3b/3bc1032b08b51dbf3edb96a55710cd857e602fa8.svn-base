@@ -1,0 +1,14 @@
+
+/**
+ * @author Denis
+ *
+ */
+public class DrillRig extends Asset 
+{
+	private static final String D_NAME = "Drilling Rig";
+	private static final String D_SYMBOL = "D";
+	
+	public DrillRig() {
+		super(D_NAME, D_SYMBOL);		
+	}
+}

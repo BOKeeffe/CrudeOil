@@ -1,0 +1,31 @@
+import static org.junit.Assert.*;
+
+import org.junit.Before;
+import org.junit.Test;
+
+public class NewsCardTest
+{
+
+	NewsCard aggressiveTaxes, stateTaxes, globalWarming;
+
+	@Before
+	public void setUp() throws Exception {
+		aggressiveTaxes = new NewsCard("aggressive Taxes", 1, "pay Bank 25m");
+		stateTaxes = new NewsCard("state Taxes ", 2, "pay Bank");
+		globalWarming = new NewsCard("global Warming", 3, "pay Bank 25m");
+	}
+
+	@Test
+	public void testConstructor() {
+		assertEquals("aggressiveTaxes", aggressiveTaxes.getName());
+		assertEquals(1, aggressiveTaxes.getNewsid());
+		assertEquals("pay Bank 25m", stateTaxes.getDescription());
+		assertEquals("stateTaxes ", stateTaxes.getName());
+		assertEquals(2, stateTaxes.getNewsid());
+		assertEquals("pay Bank", stateTaxes.getDescription());
+		assertEquals("globalWarming", globalWarming.getName());
+		assertEquals(3, globalWarming.getNewsid());
+		assertEquals("pay Bank 25m", globalWarming.getDescription());
+	}
+
+}

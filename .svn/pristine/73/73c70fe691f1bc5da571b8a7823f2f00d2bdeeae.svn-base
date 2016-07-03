@@ -1,0 +1,28 @@
+import java.util.Random;
+
+
+	/**
+	 * Creates a Dice class which randomly chooses a number
+	 * between 1 and 6 and returns the value.
+	 * 
+	 * @author Denis
+	 *
+	 */
+	public class Dice 
+	{
+	    public final static int MAX = 6;
+	    private int value;
+	    private Random num = new Random();
+	    
+	    public Dice()
+	    {
+	    	value = 1;
+	    }
+	    
+	    public int roll()
+	    {
+	    	value = (num.nextInt(6) + 1);
+	    	
+	    	return value;
+	    }
+	}

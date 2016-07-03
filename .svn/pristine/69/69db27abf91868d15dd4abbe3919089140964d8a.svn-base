@@ -1,0 +1,15 @@
+
+/**
+ * @author Denis
+ *
+ */
+public class Well extends Asset 
+{
+
+	public Well(String buildingName, String symbol, int purchasePrice,
+			int liquidationPrice) 
+	{
+		super(buildingName, symbol, purchasePrice, liquidationPrice);
+	}
+
+}

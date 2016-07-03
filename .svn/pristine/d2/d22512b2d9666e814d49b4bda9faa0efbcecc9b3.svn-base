@@ -1,0 +1,170 @@
+import java.util.ArrayList;
+import java.util.Random;
+
+/**
+ * 
+ * @author Ian
+ *
+ */
+public class CRUDE
+{
+	//Randomiser to decide which player goes first
+	private Random randomiser = new Random();
+	
+	// Game Constants
+	public static final int MAX_PLAYERS = 4;
+	public static final int START_MONEY = 250;	
+	public static final int START_GAS_PRICE = 26;
+	public static final int START_OIL_PRICE = 6;
+	public static final int START_BARRELS = 2;
+	
+	
+	// Game Variables (class properties)
+	private int theNbrOfPlayers;
+	
+	private Player currentPlayer;
+	
+	private Dice redDie;
+	private Dice blackDie;
+	private Dice greenDie;
+	
+	
+	//Maybe Change to an ArrayList, might be easier to manage.
+	private ArrayList<Player> thePlayers;
+	private ArrayList<EconomyCard> theEcoCards;	
+	//private Card[] theNewsCards = new Card[CARD_NEWS_CNT];
+	//private Card[] theEcoCards = new Card[CARD_ECO_CNT];
+	
+	private EconomyCard currentEconomyCard;
+	
+	/**
+	 * 
+	 */
+	public CRUDE() {
+		this.thePlayers = new ArrayList<Player>();
+	}
+
+	private void run() {
+		StdOut.println("Crude: The Oil Game");
+		int option = mainMenu();
+
+		while (option != 0) {
+
+			switch (option) {
+			// Set Up Menu
+			case 1:
+				int setUpOption = setUpMenu();
+				switch (setUpOption) {
+				case 1:
+					addPlayer();
+					break;
+				case 2:
+					listPlayers();
+					break;
+				case 3:
+					editPlayer();
+					break;
+				case 4:
+					removePlayer();
+				}
+			case 2:
+				startGame();
+				break;
+			}	
+			
+			option = mainMenu();
+			
+
+			StdOut.println("Exiting...bye.");
+		}
+	}
+	
+	private void removePlayer() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void editPlayer() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void startGame() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private int setUpMenu() {
+		StdOut.println("-------------------");
+		StdOut.println("SET UP MENU");
+		StdOut.println("-------------------");
+		StdOut.println("1 - Add Player");
+		StdOut.println("2 - List Players");
+		StdOut.println("3 - Edit Player (Limited)");
+		StdOut.println("4 - Remove Player");
+		StdOut.println("-------------------");
+		StdOut.println("0 - Exit");
+
+		int option = StdIn.readInt();
+		StdIn.readLine();
+
+		return option;
+	}
+
+	private int mainMenu() {
+		StdOut.println("-------------------");
+		StdOut.println("MAIN MENU");
+		StdOut.println("-------------------");
+		StdOut.println("1 - Set Up Menu");
+		StdOut.println("2 - Start the Game!");
+		StdOut.println("-------------------");
+		StdOut.println("0 - Exit");
+
+		int option = StdIn.readInt();
+		StdIn.readLine();
+
+		return option;
+	}
+	
+	
+	private void addPlayer() {
+		listPlayers();
+		if (thePlayers.size() < 4) {
+			StdOut.println("Name of the player: ");
+			String playerName = StdIn.readLine();
+			int playerNumber = thePlayers.size();
+			StdIn.readLine();
+
+			Player newPlayer = new Player(playerName, playerNumber,
+					     START_MONEY, START_BARRELS, START_BARRELS);
+			thePlayers.add(newPlayer);
+		} else {
+			StdOut.println("No more than 4 players");
+		}
+	}
+
+	private void listPlayers() {
+		StdOut.println("-----------");
+		StdOut.println("PLAYER LIST");
+		StdOut.println("-----------");
+
+		for (Player player : thePlayers) {
+			StdOut.println(player.getPlayerName());
+		}
+	}
+	
+	private int rollDice(Dice aDie) {
+		int faceValue = aDie.roll();
+		
+		return faceValue;
+	}
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		CRUDE game = new CRUDE();
+		game.run();		
+	}
+
+}

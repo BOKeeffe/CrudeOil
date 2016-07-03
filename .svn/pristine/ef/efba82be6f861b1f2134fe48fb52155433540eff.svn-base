@@ -1,0 +1,933 @@
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Random;
+
+/**
+ * @author Ian
+ * 
+ */
+public class Game
+{
+	// Randomiser to decide which player goes first.
+	// Can also be used to get the 2 news cards at game start.
+	private Random randomiser = new Random();
+
+	// Game Constants
+
+	static final int MAX_PLAYERS = 4;
+	static final int START_MONEY = 200;
+	static final int START_CON_PRICE = 26;
+	static final int START_GAS_PRICE = 16;
+	static final int START_OIL_PRICE = 6;
+	static final int START_WELL_PRICE = 5;
+	static final int START_BARRELS = 2;
+	static final int E_COUNT_START = 0;
+	static final int E_COUNT_LIMIT = 8;
+	static final int P_COUNT_START = 0;
+	static final int P_COUNT_LIMIT = 4;
+
+	// Game Variables (class properties)
+
+	private int wellPrice;
+	private int nmrWells;
+
+	Dice redDie;
+	Dice blackDie;
+	Dice greenDie;
+
+	private ArrayList<Player> thePlayers;
+	// Player that keeps track of the current player.
+	private Player cPlayer;
+
+	private ArrayList<EconomyCard> ecoCards;
+	private EconomyCard recovery;
+	private EconomyCard depression;
+	private EconomyCard rapidGrowth;
+	private EconomyCard prosperity;
+	private EconomyCard expansion;
+	private EconomyCard downturn;
+	private EconomyCard recession;
+	// Card that keeps track of the current economic state
+	private EconomyCard cEcoCard;
+
+	private ArrayList<NewsCard> newsCards;
+	private NewsCard debtReductionTax;
+	private NewsCard globalWarming;
+	private NewsCard salesTax;
+	private NewsCard longWinter;
+	private NewsCard inspection;
+	private NewsCard uncertainty;
+	// Cards that keep track of the news cards that can be drawn
+	private NewsCard lessLikely;
+	private NewsCard moreLikely;
+
+	Counter newsCount;
+	Counter playerTurn;
+	Counter phaseCount;
+	// Keeps track of the counter responsible for the changing of the economy
+	Counter ecoCounter;
+
+	EconomyBoard eBoard;
+
+	/**
+	* 
+	*/
+	public Game() {
+		this.thePlayers = new ArrayList<Player>();
+		this.ecoCards = new ArrayList<EconomyCard>();
+		this.newsCards = new ArrayList<NewsCard>();
+		this.playerTurn = new Counter(P_COUNT_START, P_COUNT_LIMIT);
+
+		// createGame(); //Is this allowed?
+	}
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		Game app = new Game();
+		app.createGame();
+		app.run();
+	}
+
+	/**
+	 * 
+	 */
+	public void createGame() {
+		// Set Price for wells
+		wellPrice = START_WELL_PRICE;
+		nmrWells = 0;
+
+		// Create the economy board
+		eBoard = new EconomyBoard(START_CON_PRICE, START_GAS_PRICE,
+				START_OIL_PRICE, START_GAS_PRICE, START_OIL_PRICE);
+
+		// Create counter for economy board
+		ecoCounter = new Counter(E_COUNT_START, E_COUNT_LIMIT);
+		
+
+		// Create all Economy cards
+		recovery = new EconomyCard("Recovery", 3, 48, 24, 5, 3, 64, 30, 30);
+		depression = new EconomyCard("Depression", (-2), 32, 18, 4, 2, 50, 24,
+				20);
+		rapidGrowth = new EconomyCard("Rapid Growth", 6, 88, 50, 14, 9, 132,
+				90, 65);
+		prosperity = new EconomyCard("Prosperity", 7, 100, 60, 16, 12, 160,
+				120, 75);
+		expansion = new EconomyCard("Expansion", 4, 66, 32, 9, 5, 96, 60, 50);
+		downturn = new EconomyCard("Downturn", 2, 75, 45, 12, 8, 120, 80, 60);
+		recession = new EconomyCard("Recession", 0, 55, 30, 8, 4, 80, 32, 45);
+		// Store Economy Cards
+		ecoCards.add(recovery);
+		ecoCards.add(depression);
+		ecoCards.add(rapidGrowth);
+		ecoCards.add(prosperity);
+		ecoCards.add(expansion);
+		ecoCards.add(downturn);
+		ecoCards.add(recession);
+		// Sets the current economy card to 'Recovery'
+		this.cEcoCard = ecoCards.get(0);
+
+		// Create all news cards.
+		// Not sure if implementing yet!
+		debtReductionTax = new NewsCard("Debt Reduction Taxes", 1,
+				("Each player must pay the bank for each of his/her assets:- "
+						+ "/n" + "Rig: 2million" + "/n" + "Well: 5million"
+						+ "/n" + "Station: 15million" + "Refinery: 20million"));
+
+		globalWarming = new NewsCard("Global Warming Threat", 2,
+				("Each player must pay the bank 25million for each "
+						+ "refinery he owns"));
+
+		salesTax = new NewsCard(
+				"Sales Taxes",
+				3,
+				("Each player must pay 15million for each Gas Station they own."));
+
+		longWinter = new NewsCard("Long Cold Winter Costs", 4,
+				("Remove 5 barrels from the domestic market."));
+
+		inspection = new NewsCard(
+				"Snap Inspection",
+				5,
+				("Each player must pay the bank 3million for every Oil barrel"
+						+ "they own and 5million for every Gas barrel they own."));
+
+		uncertainty = new NewsCard("Market Uncertainty", 6,
+				("Uncertainty causes the increase of Oil prices at home."
+						+ "/n" + "The drop of gas on the consumer market."));
+
+		// Adding news cards to an arraylist
+		newsCards.add(debtReductionTax);
+		newsCards.add(globalWarming);
+		newsCards.add(salesTax);
+		newsCards.add(longWinter);
+		newsCards.add(inspection);
+		newsCards.add(uncertainty);
+
+		// Choosing 2 random cards for the starting less and more
+		// likely news events.
+		int pickA = randomiser.nextInt(newsCards.size());
+		lessLikely = newsCards.get(pickA);
+		NewsCard tempCard = lessLikely;
+		newsCards.remove(pickA);
+
+		int pickB = randomiser.nextInt(newsCards.size());
+		moreLikely = newsCards.get(pickB);
+		newsCards.add(tempCard);
+	}
+
+	/**
+	 * Method that allows an admin to add new player into an array so that the
+	 * game can begin.
+	 * 
+	 */
+	public void addPlayer() {
+		if (thePlayers.size() > 0) { // No list if no players in list
+			listPlayers();
+		}
+		if (thePlayers.size() < 4) {
+			StdOut.println("Enter name of new player: ");
+			String playerName = StdIn.readLine();
+			if (thePlayers.size() > 0) {
+				for (Player player : thePlayers) {
+					if (player.getPlayerName().equals(playerName)) {
+						StdOut.println("Duplicated Name!");
+						StdOut.println("Please Enter new name:");
+						playerName = StdIn.readLine();
+					}
+				}
+			}
+
+			int playerNumber = (thePlayers.size() + 1);
+
+			Player newPlayer = new Player(playerName, playerNumber,
+					START_MONEY, START_BARRELS, START_BARRELS);
+
+			thePlayers.add(newPlayer);
+
+		} else {
+			StdOut.println("No more than 4 players allowed!!");
+		}
+	}
+
+	/**
+	 * Method to change the economy card, the green die is rolled and the value
+	 * it returns is passed into the method and then the economy is changed
+	 * based on what the current economy card specifies it should be.
+	 * 
+	 * @param diceRoll
+	 *            Value to be searched for.
+	 */
+	public void newEconomyType(int diceRoll) {
+		if (cEcoCard.getName().equals("Depression")) {
+			if ((diceRoll >= 1) && (diceRoll <= 4)) {
+				cEcoCard = ecoCards.get(0);
+
+			} else if ((diceRoll <= 6) && (diceRoll >= 5)) {
+				cEcoCard = ecoCards.get(4);
+			}
+
+			ecoCounter.setTurnedOver(false);
+		}
+
+		else if (cEcoCard.getName().equals("Downturn")) {
+			if ((diceRoll >= 2) && (diceRoll <= 5)) {
+				cEcoCard = ecoCards.get(6);
+
+			} else if (diceRoll == 1) {
+				cEcoCard = ecoCards.get(3);
+			} else if (diceRoll == 6) {
+				cEcoCard = ecoCards.get(1);
+			}
+
+			ecoCounter.setTurnedOver(false);
+
+		} else if (cEcoCard.getName().equals("Recovery")) {
+			if ((diceRoll >= 2) && (diceRoll <= 5)) {
+				cEcoCard = ecoCards.get(4);
+
+			} else if (diceRoll == 1) {
+				cEcoCard = ecoCards.get(5);
+			} else if (diceRoll == 6) {
+				cEcoCard = ecoCards.get(2);
+			}
+
+			ecoCounter.setTurnedOver(false);
+
+		} else if (cEcoCard.getName().equals("Recession")) {
+			if ((diceRoll >= 1) && (diceRoll <= 3)) {
+				cEcoCard = ecoCards.get(1);
+			} else if ((diceRoll >= 4) && (diceRoll <= 6)) {
+				cEcoCard = ecoCards.get(0);
+			}
+
+			ecoCounter.setTurnedOver(false);
+		} else if (cEcoCard.getName().equals("Rapid Growth")) {
+			if ((diceRoll >= 2) && (diceRoll <= 5)) {
+				cEcoCard = ecoCards.get(3);
+			} else if (diceRoll == 1) {
+				cEcoCard = ecoCards.get(4);
+			} else if (diceRoll == 6) {
+				cEcoCard = ecoCards.get(5);
+			}
+
+			ecoCounter.setTurnedOver(false);
+
+		} else if (cEcoCard.getName().equals("Prosperity")) {
+			if ((diceRoll >= 2) && (diceRoll <= 5)) {
+				cEcoCard = ecoCards.get(5);
+			} else if (diceRoll == 1) {
+				cEcoCard = ecoCards.get(2);
+			} else if (diceRoll == 6) {
+				cEcoCard = ecoCards.get(6);
+			}
+
+			ecoCounter.setTurnedOver(false);
+		} else if (cEcoCard.getName().equals("Expansion")) {
+			if ((diceRoll >= 2) && (diceRoll <= 5)) {
+				cEcoCard = ecoCards.get(2);
+			} else if (diceRoll == 1) {
+				cEcoCard = ecoCards.get(0);
+			} else if (diceRoll == 6) {
+				cEcoCard = ecoCards.get(3);
+			}
+
+			ecoCounter.setTurnedOver(false);
+		}
+
+		StdOut.println("New Economy is: " + cEcoCard.getName());
+		StdOut.println("New prices are: ");
+		cEcoCard.printPrices();
+		StdOut.println("Well Price: " + wellPrice);
+	}
+
+	/**
+	 * 
+	 */
+	public void listPlayers() {
+		StdOut.println("-----------");
+		StdOut.println("PLAYER LIST");
+		StdOut.println("-----------");
+
+		for (int i = 0; i < thePlayers.size(); i += 1) {
+			StdOut.println("Name: " + thePlayers.get(i).getPlayerName());
+			StdOut.println("Index: " + i);
+			StdOut.println("Player Number: "
+					+ thePlayers.get(i).getPlayerNumber());
+			StdOut.println("------------------");
+			StdOut.println();
+		}
+	}
+
+	/*
+	 * A method that removes the player from Player ArrayList. If this is done
+	 * the addPlayer() method is called to make it more user friendly.
+	 */
+	public void removePlayer() {
+		listPlayers();
+		StdOut.print("Choose Player To Remove: ");
+		int index = StdIn.readInt();
+		StdIn.readLine();
+
+		thePlayers.remove(index);
+		StdOut.print("New player needs to added!!");
+		addPlayer();
+	}
+
+	/**
+	 * editPlayer() A method that allows access to the player ArrayList were if
+	 * a player player exists the player name in the ArrayList can be edited
+	 * 
+	 */
+	public void editPlayer() {
+
+		listPlayers();
+		StdOut.print("Select Player index number to edit: ");
+		int index = StdIn.readInt();
+		StdIn.readLine();
+
+		StdOut.print("Enter the Player's new name: ");
+		String newPlayerName = StdIn.readLine();
+		if (thePlayers.size() > 0) {
+			for (Player player : thePlayers) {
+				if (player.getPlayerName().equals(newPlayerName)) {
+					StdOut.println("Duplicated Name!");
+					StdOut.println("Please Enter new name:");
+					newPlayerName = StdIn.readLine();
+				}
+			}
+		}
+
+		Player player = thePlayers.get(index);
+		player.setPlayerName(newPlayerName);
+
+	}
+
+	/**
+	 * Method that calculates and returns the difference between the two dice.
+	 * 
+	 * @param redVal
+	 *            Value of red die
+	 * @param blackVal
+	 *            Value of black die
+	 * @return The difference between the two or '0'.
+	 */
+	public int calcDifference(int redVal, int blackVal) {
+		int value = 0;
+
+		if (redVal > blackVal) {
+			value = redVal - blackVal;
+		} else if (blackVal > redVal) {
+			value = blackVal - redVal;
+		}
+		return value;
+	}
+
+	/**
+	 *
+	 */
+	private void specialRound() {
+		if (cPlayer == null) {
+			cPlayer = thePlayers.get(0);
+		} 
+		while (!playerTurn.isTurnedOver()) {
+			StdOut.println("----------------------");
+			StdOut.println("SPECIAL PURCHASE PHASE");
+			StdOut.println("----------------------");
+			StdOut.println(cPlayer.getPlayerName() + "'s "
+					+ "go to buy and place asset's onto board");
+			StdOut.println();
+			cPlayer.printGrid();
+
+			StdOut.println("Current Prices are: ");
+			cEcoCard.printPrices();
+			StdOut.println();
+			StdOut.println("What assets would you like to buy?");
+			StdOut.println();
+			runAsset();
+
+			StdOut.println("Are you sure you want to end your turn (y/n)?");
+			String response = StdIn.readString();
+			StdIn.readLine();
+
+			if (response.equals("y")) {
+				StdOut.println("Thank you " + cPlayer.getPlayerName());
+				StdOut.println("Here is what you're current grid looks like: ");
+				StdOut.println();
+				cPlayer.printGrid();
+				cPlayer.printInfo();
+				playerTurn.increment();
+				cPlayer = thePlayers.get(playerTurn.getCount());
+			} else if (response.equals("n")) {
+				runAsset();
+			}
+		}
+		//Resets isTurnedOver to true so next while loop can operate.
+		
+		runProduction();
+	}
+
+	
+	
+	private void runProduction() {
+		int prodOption = prodMenu();
+
+		while (prodOption != 0) {
+			switch (prodOption) {
+			case 1:
+				productionPhase();
+				break;			
+			}
+			prodOption = prodMenu();
+		}
+		StdOut.println();
+	}
+
+	private int prodMenu() {
+		StdOut.println("----------------------");
+		StdOut.println("PRODUCTION PHASE");
+		StdOut.println("----------------------");
+		StdOut.println();
+		StdOut.println("Welcome to the production phase " + cPlayer.playerName);
+		StdOut.println();
+		StdOut.println("Enter 1 to begin");
+		
+		int prodOption = StdIn.readInt();
+		StdIn.readLine();
+
+		return prodOption;
+		
+	}
+
+	/**
+	 * Method that carries out the complete production phase.
+	 * 
+	 */
+	private void productionPhase() {
+		playerTurn.setTurnedOver(false);		
+		
+		while (!playerTurn.isTurnedOver()) {
+			int	red = redDie.roll();
+			int black = blackDie.roll();
+			
+			StdOut.println();
+			// START Roll Dice
+			StdOut.println("Enter any key to roll the dice "
+					+ cPlayer.playerName);
+			String response = StdIn.readString();
+			if (!response.equals("")) {
+				StdOut.println("Rolling ");
+				red = redDie.roll();
+				black = blackDie.roll();
+			} else {
+				StdOut.println("Ensure valid key is entered!");
+				productionPhase();
+			}
+			response = StdIn.readString();
+			StdIn.readLine();
+			StdOut.println("Red Die was: " + red);
+			StdOut.println("Black Die was: " + black);
+			StdOut.println();
+			StdOut.println("Press any key to continue: ");
+			response = StdIn.readString();
+			StdIn.readLine();
+			if (!response.equals("")) {
+			} else {
+				response = StdIn.readString();
+				StdIn.readLine();
+			}
+			StdOut.println();
+			// END Roll Dice
+
+			// START Checking for doubles
+			StdOut.println("Now Checking for doubles!");
+			checkNews(red, black);
+			// END
+
+			// START Checking difference and moving counter
+			int diff = calcDifference(red, black);
+			ecoCounter.increaseBy(diff);
+
+			if (!ecoCounter.isTurnedOver()) {
+				checkHits();
+			} else {
+				// What to do if ecoCounter rolls over... I think
+				int green = greenDie.roll();
+				newEconomyType(green);
+
+				if (cEcoCard.demandChange > 0) {
+					eBoard.consumerMarketPrice += (cEcoCard.demandChange * 2);
+				} else if (cEcoCard.demandChange < 0) {
+					eBoard.consumerMarketPrice += (cEcoCard.demandChange * 2);
+				}
+				// END Checking difference and moving counter
+				
+			}
+			playerTurn.increment();
+			cPlayer = thePlayers.get(playerTurn.getCount());
+		}
+		
+		//productionPhase();
+	}
+
+	private void checkHits() {
+		// TODO Auto-generated method stub
+
+	}
+
+	private void marketPhase() {
+		// TODO Auto-generated method stub
+
+	}
+
+	/**
+	 * 
+	 */
+	private void marketRun() {
+		while (!playerTurn.isTurnedOver()) {
+
+			int marketOption = marketMenu(); // Market Phase
+
+			while (marketOption != 0) {
+				switch (marketOption) {
+				// Set Up Menu
+				case 1:
+					int oilMarketOption = oilMarketMenu();
+
+					switch (oilMarketOption) {
+					case 1:
+						buyForOil();
+						break;
+					case 2:
+						buyDomOil();
+						break;
+					}
+					break;
+
+				case 2:
+					int gasMarketOption = gasMarketMenu();
+					switch (gasMarketOption) {
+					case 1:
+						buyForGas();
+						break;
+					case 2:
+						buyDomGas();
+						break;
+					}
+					break;
+				}
+				marketOption = marketMenu();
+			}
+
+			playerTurn.setTurnedOver(false);
+		}
+
+		runAsset();
+	}
+
+	private void buyDomGas() {
+		// TODO Auto-generated method stub
+
+	}
+
+	private void buyForGas() {
+		// TODO Auto-generated method stub
+
+	}
+
+	private void buyDomOil() {
+		// TODO Auto-generated method stub
+
+	}
+
+	private void buyForOil() {
+		// TODO Auto-generated method stub
+
+	}
+
+	private int gasMarketMenu() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	private int oilMarketMenu() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	/**
+	 * @return
+	 */
+	private int marketMenu() {
+		StdOut.println("-------------------");
+		StdOut.println("MARKET PHASE");
+		StdOut.println("-------------------");
+		StdOut.println("1 - Buy Barrels of Oil");
+		StdOut.println("2 - Buy Barrels of Gas");
+		StdOut.println("-------------------");
+		StdOut.println("0 - Finish Your Turn");
+
+		int marketOption = StdIn.readInt();
+		StdIn.readLine();
+
+		return marketOption;
+	}
+
+	/**
+	 * 
+	 */
+	private void runAsset() {
+
+		int assetOption = assetMenu();
+
+		while (assetOption != 0) {
+			switch (assetOption) {
+			case 1:
+				buyOilRig();
+				break;
+			case 2:
+				buyRefinery();
+				break;
+			case 3:
+				buyStation();
+				break;
+			}
+			assetOption = assetMenu();
+		}
+		StdOut.println();
+	}
+
+	/**
+	 * @return
+	 */
+	private int assetMenu() {
+		StdOut.println("-------------------");
+		StdOut.println("ASSET MENU");
+		StdOut.println("-------------------");
+		StdOut.println("1 - Buy an Oil Rig");
+		StdOut.println("2 - Buy a Refinery");
+		StdOut.println("3 - Buy a Station");
+		StdOut.println("-------------------");
+		StdOut.println("0 - Finish Your Turn");
+
+		int assetOption = StdIn.readInt();
+		StdIn.readLine();
+
+		return assetOption;
+	}
+
+	/**
+	 * Method where the player buys and places their assets.
+	 * 
+	 */
+	private void buyStation() {
+		// 1st Checking to see if player has enough money.
+		if (cPlayer.balance > cEcoCard.stationPurPrice) {
+			cPlayer.printGrid();
+			StdOut.println("Where would you like to place your Gas Station?");
+			StdOut.println("Choose Row: ");
+			int row = StdIn.readInt();
+			StdIn.readLine();
+			// Checking if the inputted value is between 1 and 6 inclusive
+			if ((row >= 1) && (row <= 6)) {
+				row -= 1; // Index is one less than is shown to player
+			} else {
+				StdOut.println("Not a valid index. Must be between 1 and 6");
+				StdOut.println("Restarting asset placement!");
+				buyStation();
+			}
+
+			StdOut.println("Choose Row: ");
+			int col = StdIn.readInt();
+			StdIn.readLine();
+			// Checking if the inputted value is between 1 and 6 inclusive
+			if ((col >= 1) && (col <= 6)) {
+				col -= 1; // Index is one less than is shown to player
+			} else {
+				StdOut.println("Not a valid index. Must be between 1 and 6");
+				StdOut.println("Restarting asset placement!");
+				buyStation(); // If the index chosen is wrong, process starts
+								// over
+			}
+
+			// Now checking if area where asset is to be created is empty.
+			if (cPlayer.playerGrid[row][col] == null) {
+				cPlayer.playerGrid[row][col] = new Station();
+			} else {
+				StdOut.println("Space already contains a building!");
+				buyStation(); // If space is taken then it starts again.
+			}
+
+			// After buying set new balance
+			cPlayer.balance -= cEcoCard.stationPurPrice;
+			cPlayer.nmrStations += 1;
+			cPlayer.printGrid();
+		} else {
+			StdOut.println("You can't afford to buy Gas Stations!");
+			StdOut.println("Station Price is: " + cEcoCard.stationLiqPrice);
+			StdOut.println("Your balance is: " + cPlayer.balance);
+		}
+	}
+
+	/**
+	 * Method where the player buys and places their refinery.
+	 * 
+	 */
+	private void buyRefinery() {
+		// 1st Checking to see if player has enough money.
+		if (cPlayer.balance > cEcoCard.refinePurPrice) {
+			cPlayer.printGrid();
+			StdOut.println("Where would you like to place your Gas Refinery?");
+			StdOut.println("Choose Row: ");
+			int row = StdIn.readInt();
+			StdIn.readLine();
+			// Checking if the inputted value is between 1 and 6 inclusive
+			if ((row >= 1) && (row <= 6)) {
+				row -= 1; // Index is one less than is shown to player
+			} else {
+				StdOut.println("Not a valid index. Must be between 1 and 6");
+				StdOut.println("Restarting asset placement!");
+				buyRefinery();
+			}
+
+			StdOut.println("Choose Row: ");
+			int col = StdIn.readInt();
+			StdIn.readLine();
+			// Checking if the inputted value is between 1 and 6 inclusive
+			if ((col >= 1) && (col <= 6)) {
+				col -= 1; // Index is one less than is shown to player
+			} else {
+				StdOut.println("Not a valid index. Must be between 1 and 6");
+				StdOut.println("Restarting asset placement!");
+				buyRefinery(); // If the index chosen is wrong, process starts
+								// over
+			}
+
+			// Now checking if area where asset is to be created is empty.
+			if (cPlayer.playerGrid[row][col] == null) {
+				cPlayer.playerGrid[row][col] = new Refinery();
+			} else {
+				StdOut.println("Space already contains a building!");
+				buyRefinery(); // If space is taken then it starts again.
+			}
+
+			// After buying set new balance
+			cPlayer.balance -= cEcoCard.refinePurPrice;
+			cPlayer.nmrRefineries += 1;
+			cPlayer.printGrid();
+		} else {
+			// What happens if not enough money.
+			StdOut.println("You can't afford to buy Refineries!");
+			StdOut.println("Refinery Price is: " + cEcoCard.refineLiqPrice);
+			StdOut.println("Your balance is: " + cPlayer.balance);
+		}
+	}
+
+	/**
+	 * 
+	 */
+	private void buyOilRig() {
+	}
+
+	/**
+	 * Method that picks who the starting player is.
+	 */
+	private void chooseGo() {
+		Collections.shuffle(thePlayers);
+		cPlayer = thePlayers.get(0);
+		StdOut.println(cPlayer.playerName + " Goes 1st");
+		StdOut.println("Good Luck Every One");
+	}
+
+	/**
+	 * 
+	 */
+	private void run() {
+		StdOut.println("Crude: The Oil Game");
+		StdOut.println();
+		int option = mainMenu();
+
+		while (option != 0) {
+			switch (option) {
+			// Set Up Menu
+			case 1:
+				int adminOption = adminMenu();
+
+				switch (adminOption) {
+				case 1:
+					addPlayer();
+					break;
+				case 2:
+					listPlayers();
+					break;
+				case 3:
+					editPlayer();
+					break;
+				case 4:
+					removePlayer();
+					break;
+				}
+				break;
+
+			case 2:
+				int playerOption = playerMenu();
+				switch (playerOption) {
+				case 1:
+					chooseGo();
+					break;
+				case 2:					
+					specialRound();
+					break;
+				}
+				break;
+			}
+			option = mainMenu();
+		}
+		StdOut.println("Exiting...bye.");
+	}
+
+	/**
+	 * @return
+	 */
+	private int mainMenu() {
+		StdOut.println("-------------------");
+		StdOut.println("MAIN MENU");
+		StdOut.println("-------------------");
+		StdOut.println("1 - Admin Menu");
+		StdOut.println("2 - Player Menu");
+		StdOut.println("-------------------");
+		StdOut.println("0 - Exit");
+
+		int option = StdIn.readInt();
+		StdIn.readLine();
+
+		return option;
+	}
+
+	/**
+	 * @return
+	 */
+	private int playerMenu() {
+		StdOut.println("-------------------");
+		StdOut.println("PLAYER MENU");
+		StdOut.println("-------------------");
+		StdOut.println("1 - Radomise Starting Player");
+		StdOut.println("2 - Start Game");
+		StdOut.println("-------------------");
+		StdOut.println("0 - Back to Main Menu");
+
+		int playerOption = StdIn.readInt();
+		StdIn.readLine();
+
+		return playerOption;
+	}
+
+	/**
+	 * @return
+	 */
+	private int adminMenu() {
+		StdOut.println("-------------------");
+		StdOut.println("PLAYER MENU");
+		StdOut.println("-------------------");
+		StdOut.println("1 - Create Players");
+		StdOut.println("2 - List Players");
+		StdOut.println("3 - Edit Player (Name Only)");
+		StdOut.println("4 - Remove Player");
+		StdOut.println("-------------------");
+		StdOut.println("0 - Back To Main Menu");
+
+		int adminOption = StdIn.readInt();
+		StdIn.readLine();
+
+		return adminOption;
+	}
+
+	/**
+	 * @param red
+	 * @param black
+	 */
+	public void checkNews(int red, int black) {
+		if (((red == 1) && (black == 1)) || ((red == 3) && (black == 3))) {
+			doMoreLikely();
+		} else if ((red == 6) && (black == 6)) {
+			doLessLikely();
+		}
+	}
+
+	/**
+	 * 
+	 */
+	private void doMoreLikely() {
+		// TODO Auto-generated method stub
+
+	}
+
+	/**
+	 * 
+	 */
+	private void doLessLikely() {
+		// TODO Auto-generated method stub
+
+	}
+}

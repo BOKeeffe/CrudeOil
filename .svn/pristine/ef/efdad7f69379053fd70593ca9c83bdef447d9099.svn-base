@@ -1,0 +1,55 @@
+/**
+ * @author Denis
+ * 
+ */
+public class Asset
+{
+	private String buildingName;
+	private String symbol;
+	
+	/**
+	 * Constructor for objects of class Asset
+	 * 
+	 */
+	public Asset(String buildingName, String symbol) {
+		this.buildingName = buildingName;
+		this.symbol = symbol;
+	}
+
+	/**
+	 * @param buildingName
+	 */
+	public void setBuidingName(String buildingName) {
+		this.buildingName = buildingName;
+	}
+
+	/**
+	 * @return
+	 */
+	public String getBuildingName() {
+		return buildingName;
+	}
+
+	/**
+	 * @param symbol
+	 */
+	public void setSymbol(String symbol) {
+		this.symbol = symbol;
+	}
+
+	/**
+	 * @return
+	 */
+	public String getSymbol() {
+		return symbol;
+	}
+
+	/** 
+	 * @return The symbol of the asset.
+	 */
+	@Override
+	public String toString() {
+		return symbol;
+	}	
+
+}

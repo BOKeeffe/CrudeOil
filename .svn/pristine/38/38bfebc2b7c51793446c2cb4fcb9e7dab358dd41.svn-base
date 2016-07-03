@@ -1,0 +1,340 @@
+import java.util.ArrayList;
+import java.util.Random;
+
+/**
+ * @author Ian
+ * 
+ */
+public class Game
+{
+	// Randomiser to decide which player goes first.
+	// Can also be used to get the 2 news cards at game start.
+	private Random randomiser = new Random();
+
+	// Game Constants
+	
+	public static final int MAX_PLAYERS = 4;
+	public static final int START_MONEY = 200;
+	public static final int START_GAS_PRICE = 16;
+	public static final int START_OIL_PRICE = 6;
+	public static final int START_BARRELS = 2;	
+	public static final int E_COUNT_START = 0;
+	public static final int E_COUNT_LIMIT = 8;
+	public static final int P_COUNT_START = 1;
+	
+	
+	// Game Variables (class properties)
+	
+	private int wellPrice;
+    
+	private Dice redDie;
+	private Dice blackDie;
+	private Dice greenDie;
+
+	private ArrayList<Player> thePlayers;
+	private Player            currentPlayer;
+
+	private ArrayList<EconomyCard> ecoCards;
+	private EconomyCard            recovery;
+	private EconomyCard            depression;
+	private EconomyCard            rapidGrowth;
+	private EconomyCard            prosperity;
+	private EconomyCard            expansion;
+	private EconomyCard            downturn;
+	private EconomyCard            recession;
+	private EconomyCard            currentEconomyCard;
+
+	private ArrayList<NewsCard> newsCards;
+	private NewsCard            debtReductionTax;
+	private NewsCard            globalWarming;
+	private NewsCard            salesTax;
+	private NewsCard            longWinter;
+	private NewsCard            inspection;
+	private NewsCard            uncertainty;
+	
+	private NewsCard            lessLikely;
+	private NewsCard            moreLikely;
+
+	private Counter             playerTurn;
+	private Counter             phaseCount;	
+	//Keeps track of the counter responsible for the changing of the economy	
+	public  Counter             economyBoardCounter;  
+	/**
+	* 
+	*/
+	public Game() {
+		this.thePlayers = new ArrayList<Player>();
+		this.ecoCards   = new ArrayList<EconomyCard>();
+		this.newsCards  = new ArrayList<NewsCard>();
+	}
+	
+	
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		Game app = new Game();
+		app.createGame();
+		app.run();
+	}	
+	
+	
+	private void createGame() {
+		// Set Price for wells
+		wellPrice = 5;
+
+		// Create counter for economy board
+		economyBoardCounter = new Counter(E_COUNT_LIMIT, E_COUNT_START);
+
+		// Create all Economy cards and store them in an arraylist
+		recovery = new EconomyCard("Recovery", 3, 48, 24, 5, 3, 64, 30, 30);
+		depression = new EconomyCard("Depression", (-2), 32, 18, 4, 2, 50, 24,
+				                     20);
+		rapidGrowth = new EconomyCard("Rapid Growth", 6, 88, 50, 14, 9, 132,
+				                      90, 65);
+		prosperity = new EconomyCard("Prosperity", 7, 100, 60, 16, 12, 160,
+				                      120, 75);
+		expansion = new EconomyCard("Expansion", 4, 66, 32, 9, 5, 96, 60, 50);
+		downturn = new EconomyCard("Downturn", 2, 75, 45, 12, 8, 120, 80, 60);
+		recession = new EconomyCard("Recession", 0, 55, 30, 8, 4, 80, 32, 45);
+		ecoCards.add(recovery);
+		ecoCards.add(depression);
+		ecoCards.add(rapidGrowth);
+		ecoCards.add(prosperity);
+		ecoCards.add(expansion);
+		ecoCards.add(downturn);
+		ecoCards.add(recession);
+		currentEconomyCard = ecoCards.get(0);
+
+		// Create all news cards and store them in an arraylist.
+		debtReductionTax = new NewsCard("Debt Reduction Taxes", 1, ("Each player must pay the bank for each of his/her assets:- " + "/n"
+		                                + "Rig: 2million" + "/n" + "Well: 5million" + "/n" + "Station: 15million" + "Refinery: 20million"));
+		
+		globalWarming = new NewsCard("Global Warming Tax", 2, ("Each player must pay the bank for each of his/her assets:- " + "/n"
+                + "Rig: 2million" + "/n" + "Well: 5million" + "/n" + "Station: 15million" + "Refinery: 20million"));
+		
+		salesTax = new NewsCard("Sales Taxes", 3, ("Each player must pay the bank for each of his/her assets:- " + "/n"
+                + "Rig: 2million" + "/n" + "Well: 5million" + "/n" + "Station: 15million" + "Refinery: 20million"));
+		
+		longWinter = new NewsCard("Long Winter Costs", 4, ("Each player must pay the bank for each of his/her assets:- " + "/n"
+                + "Rig: 2million" + "/n" + "Well: 5million" + "/n" + "Station: 15million" + "Refinery: 20million"));
+		
+		inspection = new NewsCard("Snap Inspection", 5, ("Each player must pay the bank for each of his/her assets:- " + "/n"
+                + "Rig: 2million" + "/n" + "Well: 5million" + "/n" + "Station: 15million" + "Refinery: 20million"));
+		
+		uncertainty = new NewsCard("Market Uncertainty", 6, ("Each player must pay the bank for each of his/her assets:- " + "/n"
+                + "Rig: 2million" + "/n" + "Well: 5million" + "/n" + "Station: 15million" + "Refinery: 20million"));
+		
+		//Adding objects to an arraylist
+		newsCards.add(debtReductionTax);
+		newsCards.add(globalWarming);
+		newsCards.add(salesTax);
+		newsCards.add(longWinter);
+		newsCards.add(inspection);
+		newsCards.add(uncertainty);
+		
+		//Choosing 2 random cards for less and more likely
+		int pickA = randomiser.nextInt(newsCards.size());		
+		lessLikely = startLessLikely(pickA);
+		NewsCard tempCard = newsCards.get(pickA);
+		newsCards.remove(pickA);		
+		int pickB = randomiser.nextInt(newsCards.size());
+		moreLikely = startMoreLikely(pickB);
+		newsCards.add(tempCard);		
+	}
+
+	/**
+	 * 
+	 */
+	public void addPlayer() {
+		listPlayers();
+		if (thePlayers.size() < 4) {
+			StdOut.println("Name of the player: ");
+			String playerName = StdIn.readLine();
+			int playerNumber = thePlayers.size();
+			StdIn.readLine();
+
+			Player newPlayer = new Player(playerName, playerNumber,
+					     START_MONEY, START_BARRELS, START_BARRELS);
+			
+			thePlayers.add(newPlayer);
+		} else {
+			StdOut.println("No more than 4 players allowed!!");
+		}
+	}
+	
+	/**
+	 * Method to change the economy card, the green die is rolled
+	 * and the value it returns is passed into the method and
+	 * then the economy is changed based on what the current economy
+	 * card specifies it should be.
+	 * 
+	 * @param diceRoll Value to be searched for.
+	 */
+	public void newEconomyType(int diceRoll) {
+		if (currentEconomyCard.getName().equals("Depression")) {
+			if (diceRoll >= 1 && diceRoll <= 4) {
+				currentEconomyCard = ecoCards.get(0);
+
+			} else if (diceRoll <= 6 && diceRoll >= 5) {
+				currentEconomyCard = ecoCards.get(4);
+			}
+
+			economyBoardCounter.setTurnedOver(false);
+		}
+
+		else if (currentEconomyCard.getName().equals("Downturn")) {
+			if ((diceRoll >= 2) && (diceRoll <= 5)) {
+				currentEconomyCard = ecoCards.get(6);
+
+			} else if (diceRoll == 1) {
+				currentEconomyCard = ecoCards.get(3);
+			} else if (diceRoll == 6) {
+				currentEconomyCard = ecoCards.get(1);
+			}
+
+			economyBoardCounter.setTurnedOver(false);
+			
+			
+		} else if (currentEconomyCard.getName().equals("Recovery")) {
+			if ((diceRoll >= 2) && (diceRoll <= 5)) {
+				currentEconomyCard = ecoCards.get(4);
+
+			} else if (diceRoll == 1) {
+				currentEconomyCard = ecoCards.get(5);
+			} else if (diceRoll == 6) {
+				currentEconomyCard = ecoCards.get(2);
+			}
+
+			economyBoardCounter.setTurnedOver(false);
+			
+			
+		} else if (currentEconomyCard.getName().equals("Recession")) {
+			if ((diceRoll >= 1) && (diceRoll <= 3)) {
+				currentEconomyCard = ecoCards.get(1);
+			} else if ((diceRoll >= 4) && (diceRoll <= 6)) {
+				currentEconomyCard = ecoCards.get(0);
+			}
+
+			economyBoardCounter.setTurnedOver(false);
+		} else if (currentEconomyCard.getName().equals("Rapid Growth")) {
+			if ((diceRoll >= 2) && (diceRoll <= 5)) {
+				currentEconomyCard = ecoCards.get(3);
+			} else if (diceRoll == 1) {
+				currentEconomyCard = ecoCards.get(4);
+			} else if (diceRoll == 6) {
+				currentEconomyCard = ecoCards.get(5);
+			}
+
+			economyBoardCounter.setTurnedOver(false);
+
+		} else if (currentEconomyCard.getName().equals("Prosperity")) {
+			if ((diceRoll >= 2) && (diceRoll <= 5)) {
+				currentEconomyCard = ecoCards.get(5);
+			} else if (diceRoll == 1) {
+				currentEconomyCard = ecoCards.get(2);
+			} else if (diceRoll == 6) {
+				currentEconomyCard = ecoCards.get(6);
+			}
+
+			economyBoardCounter.setTurnedOver(false);
+		} else if (currentEconomyCard.getName().equals("Expansion")) {
+			if ((diceRoll >= 2) && (diceRoll <= 5)) {
+				currentEconomyCard = ecoCards.get(2);
+			} else if (diceRoll == 1) {
+				currentEconomyCard = ecoCards.get(0);
+			} else if (diceRoll == 6) {
+				currentEconomyCard = ecoCards.get(3);
+			}
+
+			economyBoardCounter.setTurnedOver(false);
+		}
+
+		StdOut.println("New Economy is: " + currentEconomyCard.getName());
+		StdOut.println("New prices are: " + currentEconomyCard.printPrices());
+		StdOut.println("Well Price: " + wellPrice);
+	}	
+	
+
+	/**
+	 * 
+	 */
+	public void listPlayers() {
+		StdOut.println("-----------");
+		StdOut.println("PLAYER LIST");
+		StdOut.println("-----------");		
+		
+		for (int i = 0; i < thePlayers.size(); i += 1) {
+			StdOut.println(thePlayers.get(i).getPlayerNumber() + ":" 
+		                 + thePlayers.get(i).getPlayerName());
+		}
+	}
+	
+	/**
+	 * 
+	 */
+	public void printPlayerInfo() {
+		StdOut.println(currentPlayer);
+	}
+	
+	/**
+	 * 
+	 */
+	public void printGrid() {
+		currentPlayer.printGrid();
+	}
+	
+	/*
+	 * A method that removes the player from their current position in 
+	 * the Player ArrayList.
+	 * 
+	 * 
+	 */
+	public void removePlayer() {
+		
+		listPlayers();
+        StdOut.print("Choose Player To Remove: ");
+        int index = StdIn.readInt();
+        StdIn.readLine();
+        
+        thePlayers.remove(index);
+        StdOut.print("New player needs to added!!");
+        addPlayer();
+	}
+	
+	/**
+	 * @param pick
+	 * @return
+	 */
+	public NewsCard startLessLikely(int pick) {
+		for (NewsCard card: newsCards) {
+			if (card.getNewsid() == pick) {
+				lessLikely = card;
+			}
+		}
+		return lessLikely;
+	}
+	
+	/**
+	 * @param pick
+	 * @return
+	 */
+	public NewsCard startMoreLikely(int pick) {
+		for (NewsCard card: newsCards) {
+			if (card.getNewsid() == pick) {
+				moreLikely = card;
+			}
+		}
+		return moreLikely;		
+	}
+	
+	
+	/**
+	 * 
+	 */
+	private void run() {
+		// TODO Auto-generated method stub
+		
+	}
+
+}

@@ -1,0 +1,69 @@
+import static org.junit.Assert.*;
+
+import java.util.ArrayList;
+import java.util.Random;
+
+import org.junit.Test;
+
+
+public class GameTest
+{
+
+	@Test
+	public void testCardArray() {
+		ArrayList<EconomyCard> ecoCards = new ArrayList<EconomyCard>();
+		
+		EconomyCard recovery    = new EconomyCard("Recovery", 3, 48, 24, 5, 3, 64, 30, 30);
+		EconomyCard depression  = new EconomyCard("Depression", (- 2), 32, 18, 4, 2, 50, 24, 20);
+		EconomyCard rapidGrowth = new EconomyCard("Rapid Growth", 6, 88, 50, 14, 9, 132, 90, 65);
+		EconomyCard prosperity  = new EconomyCard("Prosperity", 7, 100, 60, 16, 12, 160, 120, 75);
+		EconomyCard expansion   = new EconomyCard("Expansion", 4, 66, 32, 9, 5, 96, 60, 50);
+		EconomyCard downturn    = new EconomyCard("Downturn", 2, 75, 45, 12, 8, 120, 80, 60);
+		EconomyCard recession   = new EconomyCard("Recession", 0, 55, 30, 8, 4, 80, 32, 45);
+		ecoCards.add(recovery);
+		ecoCards.add(depression);
+		ecoCards.add(rapidGrowth);
+		ecoCards.add(prosperity);
+		ecoCards.add(expansion);
+		ecoCards.add(downturn);
+		ecoCards.add(recession);
+		
+		assertEquals("Prosperity", prosperity.getName());
+		assertEquals("Prosperity", ecoCards.get(3).getName());
+	}
+	
+	/*@Test
+	public void testPrintPlayers() {
+		Player player = new Player("bob", 1, 200, 2, 2);		
+		assertEquals("Player Name: bob", player.toString());
+	}*/
+	
+	@Test
+	public void testNewsCardSelection() {
+		Random randomiser = new Random();
+		Game game = new Game();
+		ArrayList<NewsCard> newsCards = new ArrayList<NewsCard>();		
+		
+		NewsCard inspection = new NewsCard("Snap Inspection", 5, ("Each player must pay the bank for each of his/her assets:- " + "/n"
+                + "Rig: 2million" + "/n" + "Well: 5million" + "/n" + "Station: 15million" + "Refinery: 20million"));
+		
+		NewsCard uncertainty = new NewsCard("Market Uncertainty", 6, ("Each player must pay the bank for each of his/her assets:- " + "/n"
+                + "Rig: 2million" + "/n" + "Well: 5million" + "/n" + "Station: 15million" + "Refinery: 20million"));
+		
+		newsCards.add(inspection);
+		newsCards.add(uncertainty);
+				
+		int pickA = randomiser.nextInt(newsCards.size());		
+		NewsCard lessLikely = game.startLessLikely(pickA);
+		NewsCard tempCard = newsCards.get(pickA);
+		newsCards.remove(pickA);
+		assertEquals(1, newsCards.size());
+		int pickB = randomiser.nextInt(newsCards.size());
+		NewsCard moreLikely = game.startMoreLikely(pickB);
+		newsCards.add(tempCard);
+		assertEquals(2, newsCards.size());
+		
+	}
+	
+
+}

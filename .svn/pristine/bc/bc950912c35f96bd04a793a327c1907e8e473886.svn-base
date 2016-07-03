@@ -1,0 +1,32 @@
+import static org.junit.Assert.*;
+
+import org.junit.Test;
+
+
+public class CounterTest
+{
+
+	@Test
+	public void testCreateCounter() {
+		Counter counter = new Counter(8, 0);
+		assertNotNull(counter);
+		assertEquals(8, counter.getLimit());
+		assertEquals(0, counter.getStartingPoint());
+		assertEquals(0, counter.getCount());		
+	}
+	
+	
+	@Test
+	public void testCounterReset() {
+		Counter counterA = new Counter(8, 0);
+		Counter counterB = new Counter(4, 1);
+		
+		counterA.setCount(5);
+		counterA.increaseBy(3);
+		assertEquals(0, counterA.getCount());
+		
+		counterB.setCount(3);
+		counterB.increment();
+		assertEquals(1, counterB.getCount());
+	}
+}

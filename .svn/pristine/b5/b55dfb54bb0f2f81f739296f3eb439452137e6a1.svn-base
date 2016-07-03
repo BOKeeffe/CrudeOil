@@ -1,0 +1,15 @@
+
+/**
+ * @author Denis
+ *
+ */
+public class DrillRig extends Asset 
+{
+
+	public DrillRig(String buildingName, String symbol, int purchasePrice,
+			int liquidationPrice) 
+	{
+		super(buildingName, symbol, purchasePrice, liquidationPrice);		
+	}
+
+}

@@ -1,0 +1,412 @@
+import java.util.ArrayList;
+import java.util.Random;
+
+/**
+ * 
+ * @author Ian
+ *
+ */
+public class CRUDE
+{
+	//Randomiser to decide which player goes first.
+	//Can also be used to get the 2 news cards at game start.
+	private Random randomiser = new Random();
+	
+	// Game Constants
+	public static final int MAX_PLAYERS = 4;
+	public static final int START_MONEY = 250;	
+	public static final int START_GAS_PRICE = 16;
+	public static final int START_OIL_PRICE = 6;
+	public static final int START_BARRELS = 2;
+	
+	
+	// Game Variables (class properties)
+	private int theNbrOfPlayers;
+	
+	private Dice redDie;
+	private Dice blackDie;
+	private Dice greenDie;
+		
+	private ArrayList<Player> thePlayers;
+	private Player currentPlayer;
+	
+	private ArrayList<EconomyCard> ecoCards;	
+	private EconomyCard currentEconomyCard;
+	
+	private ArrayList<NewsCard> newsCards;
+	private NewsCard lessLikely;
+	private NewsCard moreLikely;
+	
+	private Counter playerTurn;
+	private Counter phaseCount;
+	
+	/**
+	 * 
+	 */
+	public CRUDE() {
+		this.thePlayers = new ArrayList<Player>();
+		this.ecoCards   = new ArrayList<EconomyCard>();
+		this.newsCards  = new ArrayList<NewsCard>();		
+	}
+
+	/**
+	 * @return the currentPlayer
+	 */
+	public Player getCurrentPlayer() {
+		return currentPlayer;
+	}
+
+	/**
+	 * @param currentPlayer the currentPlayer to set
+	 */
+	public void setCurrentPlayer(Player currentPlayer) {
+		this.currentPlayer = currentPlayer;
+	}
+
+	/**
+	 * @return the ecoCards
+	 */
+	public ArrayList<EconomyCard> getEcoCards() {
+		return ecoCards;
+	}
+
+	/**
+	 * @param ecoCards the ecoCards to set
+	 */
+	public void setEcoCards(ArrayList<EconomyCard> ecoCards) {
+		this.ecoCards = ecoCards;
+	}
+
+	/**
+	 * @return the newsCards
+	 */
+	public ArrayList<NewsCard> getNewsCards() {
+		return newsCards;
+	}
+
+	/**
+	 * @param newsCards the newsCards to set
+	 */
+	public void setNewsCards(ArrayList<NewsCard> newsCards) {
+		this.newsCards = newsCards;
+	}
+
+	
+	
+	
+	/**
+	 * 
+	 */
+	private void run() {
+		StdOut.println("Crude: The Oil Game");
+		int option = mainMenu();
+
+		while (option != 0) {
+
+			switch (option) {
+			// Set Up Menu
+			case 1:
+				int setUpOption = setUpMenu();
+				switch (setUpOption) {
+				case 1:
+					addPlayer();
+					break;
+				case 2:
+					listPlayers();
+					break;
+				case 3:
+					editPlayer();
+					break;
+				case 4:
+					removePlayer();
+					break;
+				}
+			case 2:
+				startGame();
+				break;
+			}	
+			
+			option = mainMenu();
+			
+
+			StdOut.println("Exiting...bye.");
+		}
+	}
+	
+	
+	/*
+	 * Method removePlayer
+	 * 
+	 * A method that removes the player from their current position in the Player ArrayList
+	 * 
+	 * 
+	 */
+	private void removePlayer() {
+		
+		listPlayers();
+        StdOut.print("Player to remove ==>");
+        int index = StdIn.readInt();
+        StdIn.readLine();
+        
+        thePlayers.remove(index);
+		
+	}
+
+	private void editPlayer() {
+		
+		
+	}
+
+	/**
+	 * Where all objects are to be created and the game begins.
+	 * 
+	 */
+	private void startGame() {
+		
+	}
+
+	private int setUpMenu() {
+		StdOut.println("-------------------");
+		StdOut.println("SET UP MENU");
+		StdOut.println("-------------------");
+		StdOut.println("1 - Add Player");
+		StdOut.println("2 - List Players");
+		StdOut.println("3 - Edit Player (Limited)");
+		StdOut.println("4 - Remove Player");
+		StdOut.println("-------------------");
+		StdOut.println("0 - Exit");
+
+		int option = StdIn.readInt();
+		StdIn.readLine();
+
+		return option;
+	}
+
+	private int mainMenu() {
+		StdOut.println("-------------------");
+		StdOut.println("MAIN MENU");
+		StdOut.println("-------------------");
+		StdOut.println("1 - Set Up Menu");
+		StdOut.println("2 - Start the Game!");
+		StdOut.println("-------------------");
+		StdOut.println("0 - Exit");
+
+		int option = StdIn.readInt();
+		StdIn.readLine();
+
+		return option;
+	}
+	
+	/**
+	 * @return
+	 */
+	private int marketMenu() {
+		StdOut.println("-------------------");
+		StdOut.println("Market MENU");
+		StdOut.println("-------------------");
+		StdOut.println("1 - Purchase Oil From Domestic Market");
+		StdOut.println("2 - Purchase Gasoline From Domestic Market");
+		StdOut.println("3 - Purchase Oil From Foreign Market");
+		StdOut.println("4 - Purchase Gasoline From Foreign Market");
+		StdOut.println("-------------------");
+		StdOut.println("0 - Exit");
+
+		int option = StdIn.readInt();
+		StdIn.readLine();
+
+		return option;
+	}
+	
+	/**
+	 * 
+	 */
+	private void runMarketMenu() {
+		StdOut.println("Crude: The Oil Game");
+		int option = mainMenu();
+
+		while (option != 0) {
+
+			switch (option) {
+			// Set Up Menu
+			case 1:
+				int marketOption = marketMenu();
+				switch (marketOption) {
+				case 1:
+					buyDomOil();
+					break;
+				case 2:
+					buyDomGas();
+					break;
+				case 3:
+					buyForOil();					
+					break;
+				case 4:
+					buyForGas();
+				}
+			case 2:
+				startGame();
+				break;
+			}	
+			
+			option = mainMenu();
+			
+
+			StdOut.println("Exiting...bye.");
+		}
+	}
+	
+	
+	/**
+	 * 
+	 */
+	private void buyForGas() {
+		this.buyForGas()= Player.getBalance() - EconomyBoard.forGasPrice;
+		
+	}
+
+	/**
+	 * 
+	 */
+	private void buyForOil() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/**
+	 * 
+	 */
+	private void buyDomGas() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/**
+	 * 
+	 */
+	private void buyDomOil() {
+				
+	}
+	
+	
+	private int AssetMenu() {
+		StdOut.println("-------------------");
+		StdOut.println("Asset MENU");
+		StdOut.println("-------------------");
+		StdOut.println("1 - Purchase Drilling Rig");
+		StdOut.println("2 - Purchase Gas Station");
+		StdOut.println("3 - Purchase Refinery");
+		StdOut.println("-------------------");
+		StdOut.println("0 - Exit");
+
+		int option = StdIn.readInt();
+		StdIn.readLine();
+
+		return option;
+	}
+	
+	/**
+	 * 
+	 */
+	private void runAssetMenu() {
+		StdOut.println("Crude: The Oil Game");
+		int option = mainMenu();
+
+		while (option != 0) {
+
+			switch (option) {
+			// Set Up Menu
+			case 1:
+				int AssetOption = AssetMenu();
+				switch (AssetOption) {
+				case 1:
+					buyRig();
+					break;
+				case 2:
+					buyStation();
+					break;
+				case 3:
+					buyRefinery();					
+					break;
+				case 4:
+					buyForGas();
+				}
+			case 2:
+				startGame();
+				break;
+			}	
+			
+			option = mainMenu();
+			
+
+			StdOut.println("Exiting...bye.");
+		}
+	}
+	
+	
+	
+	/**
+	 * 
+	 */
+	private void buyRefinery() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/**
+	 * 
+	 */
+	private void buyStation() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/**
+	 * 
+	 */
+	private void buyRig() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void addPlayer() {
+		listPlayers();
+		if (thePlayers.size() < 4) {
+			StdOut.println("Name of the player: ");
+			String playerName = StdIn.readLine();
+			int playerNumber = thePlayers.size();
+			StdIn.readLine();
+
+			Player newPlayer = new Player(playerName, playerNumber,
+					     START_MONEY, START_BARRELS, START_BARRELS);
+			thePlayers.add(newPlayer);
+		} else {
+			StdOut.println("No more than 4 players");
+		}
+	}
+
+	private void listPlayers() {
+		StdOut.println("-----------");
+		StdOut.println("PLAYER LIST");
+		StdOut.println("-----------");
+
+		for(int i = 0; i < thePlayers.size(); i = i + 1)
+	       {
+	    	   StdOut.println( i + ":" +  thePlayers.get(i));
+	       }
+	}
+	
+
+	
+
+
+	
+	
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		CRUDE game = new CRUDE();
+		game.run();		
+	}
+
+}

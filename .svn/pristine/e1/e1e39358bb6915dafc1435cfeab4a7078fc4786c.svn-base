@@ -1,0 +1,17 @@
+
+/**
+ * @author Denis
+ *
+ */
+public class Well extends Asset 
+{
+
+	private final static String S_NAME = "Well";
+	private final static String S_SYMBOL = "W";
+	
+	public Well() 
+	{
+		super(S_NAME, S_SYMBOL);
+	}
+
+}

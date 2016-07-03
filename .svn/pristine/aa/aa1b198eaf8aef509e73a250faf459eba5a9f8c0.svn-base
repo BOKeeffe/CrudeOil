@@ -1,0 +1,19 @@
+
+/**
+ * A Gas Station class(subclass) which extends the name and
+ * the symbol to the Asset class
+ * @author Denis
+ *
+ */
+public class Station extends Asset 
+{
+	private final static String S_NAME = "Station";
+	private final static String S_SYMBOL = "S";
+	
+
+	public Station() 
+	{
+		super(S_NAME, S_SYMBOL);
+	}
+
+}

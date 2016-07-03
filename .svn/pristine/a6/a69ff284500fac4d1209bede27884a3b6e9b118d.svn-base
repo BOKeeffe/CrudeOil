@@ -1,0 +1,17 @@
+
+/**
+ * @author Denis
+ *
+ */
+public class Station extends Asset 
+{
+	private final static String S_NAME = "Station";
+	private final static String S_SYMBOL = "S";
+	
+
+	public Station() 
+	{
+		super(S_NAME, S_SYMBOL);
+	}
+
+}

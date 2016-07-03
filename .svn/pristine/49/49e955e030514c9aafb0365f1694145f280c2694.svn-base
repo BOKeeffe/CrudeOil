@@ -1,0 +1,509 @@
+
+public class EconomyCard 
+{
+	
+	private String name;
+	private int demandChange;
+	private int stationPurPrice;
+	private int stationLiqPrice;
+	private int rigPurPrice;
+	private int rigLiqPrice;
+	private int refinePurPrice;
+	private int refineLiqPrice;
+	private int wellLiqPrice;
+	
+	
+
+	
+	
+	public EconomyCard(String name, int demandChange, int stationPurPrice, int stationLiqPrice,
+	  int rigPurPrice, int rigLiqPrice, int refinePurPrice, int refineLiqPrice, int wellLiqPrice )
+	
+	{
+		
+		this.name = name;
+		this.demandChange = demandChange;
+		this.stationPurPrice = stationPurPrice;
+		this.stationLiqPrice = stationLiqPrice;
+		this.rigPurPrice = rigPurPrice;
+		this.rigLiqPrice = rigLiqPrice;
+		this.refinePurPrice = refinePurPrice;
+		this.refineLiqPrice = refineLiqPrice;
+		this.wellLiqPrice = wellLiqPrice;
+	}
+	
+	
+
+	public void newEconomyType(int diceRoll) 
+	{
+		
+		if ( name.equals("depression"))
+			{
+					 if(diceRoll >=1 && diceRoll <=4 )
+					 {
+						name = recovery();
+						 
+					 }
+					 else if (diceRoll <= 6 && diceRoll >= 5)
+					 {
+						 name = expansion();
+					 }
+			}
+		
+		   else if (name.equals("downturn"))
+		   {
+			   if(diceRoll >= 2 && diceRoll <= 5)
+				 {
+					 name = recession();
+					 
+				 }
+				 else if (diceRoll == 1)
+				 {
+					 name = prosperity();
+				 }
+			    else if (diceRoll == 6)
+			     {
+				   name = depression();
+			     }
+			   
+			else if (name.equals("recovery"))
+			{
+				 if(diceRoll >= 2 && diceRoll <=5 )
+				 {
+					 name = expansion();
+					 
+				 }
+				 else if (diceRoll == 1)
+				 {
+					 name = downturn();
+				 }
+			    else if (diceRoll == 6)
+			     {
+				   name = rapidGrowth();
+			     }
+			}
+			else if (name.equals("recession")) 
+			{
+				if(diceRoll >0 && diceRoll <=4)
+				{
+					name = depression();
+				}
+				else if (diceRoll >=5 && diceRoll <=6)
+				{
+					name= recovery();
+				}
+			}
+			else if(name.equals("rapidGrowth"))
+			{
+				if(diceRoll>=2 && diceRoll <=5)
+				{
+					name= prosperity();
+				}
+				else if (diceRoll == 1)
+				{
+					name = expansion();
+				}
+				else if (diceRoll == 6)
+				{
+					name = downturn();
+				}
+					
+			}
+			else if(name.equals("prosperity"))
+			{
+				if(diceRoll >= 2 && diceRoll <=5)
+				{
+					name = downturn();
+				}
+				else if(diceRoll == 1)
+				{
+					name = rapidGrowth();
+				}
+				else if(diceRoll ==6)
+				{
+					name = recession();
+				}
+			}
+			else if (name.equals("expansion"))
+			{
+				if(diceRoll >= 2 && diceRoll <=5 )
+				{
+					name = expansion();
+				}
+				else if(diceRoll == 1)
+				{
+					name = expansion();
+				}
+				else if (diceRoll == 6)
+				{
+					name = prosperity();
+				}
+			}
+			   
+		   }
+	}
+	
+	
+	
+	
+	
+	public String downturn()
+	{
+		
+		demandChange = 2;
+		stationPurPrice = 75;
+		stationLiqPrice = 45;
+		rigPurPrice = 12;
+		rigLiqPrice = 8;
+		refinePurPrice = 120;
+		refineLiqPrice = 80;
+		wellLiqPrice = 60;
+		return downturn();
+		
+		
+	}
+	
+	public String depression()
+	{
+		
+		demandChange = -2;
+		stationPurPrice = 32;
+		stationLiqPrice = 18;
+		rigPurPrice = 4;
+		rigLiqPrice = 2;
+		refinePurPrice = 50;
+		refineLiqPrice = 24;
+		wellLiqPrice = 20;
+		return depression();
+		
+	}
+	
+	public String expansion()
+	{
+		
+		demandChange = 4;
+		stationPurPrice = 66;
+		stationLiqPrice = 32;
+		rigPurPrice = 9;
+		rigLiqPrice = 5;
+		refinePurPrice = 96;
+		refineLiqPrice = 60;
+		wellLiqPrice = 50;
+		return expansion();
+				
+	}
+	
+	public String prosperity()
+	{
+		
+		demandChange = 7;
+		stationPurPrice = 100;
+		stationLiqPrice = 60;
+		rigPurPrice = 16;
+		rigLiqPrice = 12;
+		refinePurPrice = 160;
+		refineLiqPrice = 120;
+		wellLiqPrice = 75;
+		return prosperity();
+	}
+	
+	public String rapidGrowth()
+	{
+		
+		demandChange = 6;
+		stationPurPrice = 88;
+		stationLiqPrice = 50;
+		rigPurPrice = 14;
+		rigLiqPrice = 9;
+		refinePurPrice = 132;
+		refineLiqPrice = 90;
+		wellLiqPrice = 65;
+		return rapidGrowth();
+	}
+	
+	public String recession()
+	{
+		
+		demandChange = 0;
+		stationPurPrice = 55;
+		stationLiqPrice = 30;
+		rigPurPrice = 8;
+		rigLiqPrice = 4;
+		refinePurPrice = 80;
+		refineLiqPrice = 32;
+		wellLiqPrice = 45;
+		return recession();
+	}
+	
+	public String recovery()
+	{
+		
+		demandChange = 3;
+		stationPurPrice = 48;
+		stationLiqPrice = 24;
+		rigPurPrice = 5;
+		rigLiqPrice = 3;
+		refinePurPrice = 64;
+		refineLiqPrice = 30;
+		wellLiqPrice = 30;
+		return recovery();
+		
+	}
+	
+	
+	
+	
+	
+	
+
+	/**
+	 * @return the name
+	 */
+	public String getName() {
+		return name;
+	}
+
+
+
+
+
+
+
+	/**
+	 * @param name the name to set
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
+
+
+
+
+
+
+
+	/**
+	 * @return the demandChange
+	 */
+	public int getDemandChange() {
+		return demandChange;
+	}
+
+
+
+
+
+
+
+	/**
+	 * @param demandChange the demandChange to set
+	 */
+	public void setDemandChange(int demandChange) {
+		this.demandChange = demandChange;
+	}
+
+
+
+
+
+
+
+	/**
+	 * @return the stationPurPrice
+	 */
+	public int getStationPurPrice() {
+		return stationPurPrice;
+	}
+
+
+
+
+
+
+
+	/**
+	 * @param stationPurPrice the stationPurPrice to set
+	 */
+	public void setStationPurPrice(int stationPurPrice) {
+		this.stationPurPrice = stationPurPrice;
+	}
+
+
+
+
+
+
+
+	/**
+	 * @return the stationLiqPrice
+	 */
+	public int getStationLiqPrice() {
+		return stationLiqPrice;
+	}
+
+
+
+
+
+
+
+	/**
+	 * @param stationLiqPrice the stationLiqPrice to set
+	 */
+	public void setStationLiqPrice(int stationLiqPrice) {
+		this.stationLiqPrice = stationLiqPrice;
+	}
+
+
+
+
+
+
+
+	/**
+	 * @return the rigPurPrice
+	 */
+	public int getRigPurPrice() {
+		return rigPurPrice;
+	}
+
+
+
+
+
+
+
+	/**
+	 * @param rigPurPrice the rigPurPrice to set
+	 */
+	public void setRigPurPrice(int rigPurPrice) {
+		this.rigPurPrice = rigPurPrice;
+	}
+
+
+
+
+
+
+
+	/**
+	 * @return the rigLiqPrice
+	 */
+	public int getRigLiqPrice() {
+		return rigLiqPrice;
+	}
+
+
+
+
+
+
+
+	/**
+	 * @param rigLiqPrice the rigLiqPrice to set
+	 */
+	public void setRigLiqPrice(int rigLiqPrice) {
+		this.rigLiqPrice = rigLiqPrice;
+	}
+
+
+
+
+
+
+
+	/**
+	 * @return the refinePurPrice
+	 */
+	public int getRefinePurPrice() {
+		return refinePurPrice;
+	}
+
+
+
+
+
+
+
+	/**
+	 * @param refinePurPrice the refinePurPrice to set
+	 */
+	public void setRefinePurPrice(int refinePurPrice) {
+		this.refinePurPrice = refinePurPrice;
+	}
+
+
+
+
+
+
+
+	/**
+	 * @return the refineLiqPrice
+	 */
+	public int getRefineLiqPrice() {
+		return refineLiqPrice;
+	}
+
+
+
+
+
+
+
+	/**
+	 * @param refineLiqPrice the refineLiqPrice to set
+	 */
+	public void setRefineLiqPrice(int refineLiqPrice) {
+		this.refineLiqPrice = refineLiqPrice;
+	}
+
+
+
+
+
+
+
+	/**
+	 * @return the wellLiqPrice
+	 */
+	public int getWellLiqPrice() {
+	
+		return wellLiqPrice;
+	}
+
+
+
+
+	/**
+	 * @param wellLiqPrice the wellLiqPrice to set
+	 */
+	public void setWellLiqPrice(int wellLiqPrice) {
+		this.wellLiqPrice = wellLiqPrice;
+	}
+
+
+
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "EconomyCard [name=" + name + ", demandChange=" + demandChange
+				+ ", stationPurPrice=" + stationPurPrice + ", stationLiqPrice="
+				+ stationLiqPrice + ", rigPurPrice=" + rigPurPrice
+				+ ", rigLiqPrice=" + rigLiqPrice + ", refinePurPrice="
+				+ refinePurPrice + ", refineLiqPrice=" + refineLiqPrice
+				+ ", wellLiqPrice=" + wellLiqPrice + "]";
+	}
+
+
+
+	public static EconomyCard findByName(String string) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+}

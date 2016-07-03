@@ -1,0 +1,177 @@
+/**
+ * @author Ian
+ * 
+ */
+
+public class Player
+{
+
+	private static final int ROWS = 6;
+	private static final int COLS = 6; 
+
+	private String     playerName;
+	private int        playerNumber;
+	private int        balance;
+	private int        oilBarrels;
+	private int        gasBarrels;
+	private Asset[][]  playerGrid;
+
+	/**
+	 * Constructor for objects of class player.
+	 * 
+	 * @param playerName
+	 *            The player's name.
+	 * @param playerNumber
+	 *            The player's number.
+	 * @param balance
+	 *            The balance a player is to start off with.
+	 * @param oilBarrels
+	 *            Amount of oil barrels to start with.
+	 * @param gasBarrels
+	 *            Amount of petrol barrels to start with.
+	 */
+	public Player(String playerName, int playerNumber, int balance,
+			                           int oilBarrels, int gasBarrels) {
+		this.playerName   = playerName;
+		this.playerNumber = playerNumber;
+		this.balance      = balance;
+		this.oilBarrels   = oilBarrels;
+		this.gasBarrels   = gasBarrels;
+		this.playerGrid   = new Asset[ROWS][COLS];
+	}
+
+	/**
+	 * Setter to change the name of a player.
+	 * 
+	 * @param playerName
+	 *            What the player should be set to.
+	 */
+	public void setPlayerName(String playerName) {
+		this.playerName = playerName;
+	}
+
+	/**
+	 * Method that returns the name of a player.
+	 * 
+	 * @return The name of the player.
+	 */
+	public String getPlayerName() {
+		return playerName;
+	}
+
+	/**
+	 * A method that can be used to set the player's number.
+	 * 
+	 * @param playerNumber
+	 *            the playerNumber to set
+	 */
+	public void setPlayerNumber(int playerNumber) {
+		this.playerNumber = playerNumber;
+	}
+
+	/**
+	 * Getter that returns the player's number.
+	 * 
+	 * @return The player's number.
+	 */
+	public int getPlayerNumber() {
+		return playerNumber;
+	}
+
+	/**
+	 * Setter to change the current balance of a player.
+	 * 
+	 * @param balance
+	 *            The balance to set
+	 */
+	public void setBalance(int balance) {
+		if (balance >= 0) {
+			this.balance = balance;
+		}
+	}
+
+	/**
+	 * Getter that returns the current balance a player has.
+	 * 
+	 * @return The balance a player currently has.
+	 */
+	public int getBalance() {
+		return balance;
+	}
+
+	/**
+	 * Setter to change the amount of oil barrels that a player currently has.
+	 * 
+	 * @param oilBarrels
+	 *            The oil barrels to set.
+	 */
+	public void setOilBarrels(int oilBarrels) {
+		if (oilBarrels >= 0) {
+			this.oilBarrels = oilBarrels;
+		}
+	}
+
+	/**
+	 * Method that returns the amount of oil barrels a player currently has.
+	 * 
+	 * @return The amount of oil barrels a player has.
+	 */
+	public int getOilBarrels() {
+		return oilBarrels;
+	}
+
+	/**
+	 * Setter to change the amount of petrol barrels that a user has.
+	 * 
+	 * @param gasBarrels
+	 *            The new amount of barrels to be set.
+	 */
+	public void setGasBarrels(int gasBarrels) {
+		if (gasBarrels >= 0) {
+			this.gasBarrels = gasBarrels;
+		}
+	}
+
+	/**
+	 * Method that returns the amount of barrels a player has in his/her
+	 * inventory.
+	 * 
+	 * @return The amount of petrol barrels a player has.
+	 */
+	public int getGasBarrels() {
+		return gasBarrels;
+	}
+
+	/**
+	 * Setter to change the player grid.
+	 * 
+	 * @param playerGrid
+	 *            the playerGrid to set
+	 */
+	public void setPlayerGrid(Asset[][] playerGrid) {
+		this.playerGrid = playerGrid;
+	}
+
+	/**
+	 * Returns the player grid
+	 * 
+	 * @return The Players Grid
+	 */
+	public Asset[][] getPlayerGrid() {
+		return playerGrid;
+	}
+
+	/**
+	 * Method that returns all the players info in string form.
+	 * 
+	 * @return Object info contained within a string.
+	 */
+	@Override
+	public String toString() {
+		return ("Player Name: " + playerName + "/n" 
+	            + "Balance: " + balance + "million" + "/n" 
+				+ "Oil Barrels: " + oilBarrels + "/n" 
+	            + "Gas Barrels: " + gasBarrels + "/n"
+	            + "Assets: " + getPlayerGrid());
+	}
+}

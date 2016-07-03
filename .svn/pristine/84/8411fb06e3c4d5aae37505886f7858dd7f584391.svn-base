@@ -1,0 +1,15 @@
+
+/**
+ * @author Denis
+ *
+ */
+public class Station extends Asset 
+{
+
+	public Station(String buildingName, String symbol, int purchasePrice,
+			int liquidationPrice) 
+	{
+		super(buildingName, symbol, purchasePrice, liquidationPrice);
+	}
+
+}
